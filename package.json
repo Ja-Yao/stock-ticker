@@ -9,9 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.9.0",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.6.4",
+    "@mui/system": "^5.6.4",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.0",
+    "firebase": "^9.7.0",
+    "firebase-tools": "^10.8.0",
+    "framer-motion": "^6.3.3",
     "next": "12.1.6",
+    "node-sass": "^7.0.1",
     "react": "18.1.0",
-    "react-dom": "18.1.0"
+    "react-dom": "18.1.0",
+    "scrollreveal": "^4.0.9",
+    "twelvedata": "^3.0.0"
   },
   "devDependencies": {
     "eslint": "8.14.0",
