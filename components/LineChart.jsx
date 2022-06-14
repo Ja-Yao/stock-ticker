@@ -1,39 +1,66 @@
-import React from 'react';
-import { Chart as ChartJS } from 'chart.js/auto';
-import { Line } from 'react-chartjs-2';
-
+import React, { useState, useEffect} from "react";
+import { Chart as ChartJS } from "chart.js/auto";
+import { Line } from "react-chartjs-2";
 
 export default function LineChart({ stock }) {
-  
+	const labels = stock.values.reverse().map((data) => data.datetime.split(" ")[1]);
+	const price = stock.values.reverse().map((data) => data.close);
 
-	const data = {
-		labels: stock.values.map(data => data.datetime.split(' ')[1]),
-		datasets: [
-			{
-				label: 'test',
-				data: stock.values.map(data => data.close),
-				backgroundColor: '#2469f0',
-				borderColor: '#2469f0',
-        pointRadius: 1,
-        pointHoverRadius: 8,
-				tension: 0.5,
-			}
-		]
-	};
+	const data = () => {
+		return {
+      labels: labels,
+      datasets: [
+        {
+          label: "Price",
+          data: price,
+					backgroundColor: (context) => {
+            const ctx = context.chart.ctx;
+            const gradient = ctx.createLinearGradient(0, 0, 0, 800);
+            gradient.addColorStop(0, "rgba(25, 130, 252, 0.2)");
+            gradient.addColorStop(0.6, "rgba(25, 130, 252, 0)");
+            return gradient;
+          },
+          borderColor: "#2469f0",
+          borderWidth: 2,
+          fill: true,
+          pointRadius: 0,
+          pointHoverRadius: 8,
+          tension: 0.5,
+        },
+      ],
+    };
+  };
 
-  const options = {
-		plugins: {
+	const options = {
+    responsive: true,
+    plugins: {
       legend: false, // Hide legend
-		},
-		scales: {
-			y: {
-				display: false // Hide Y axis labels
-			},
+    },
+    scales: {
+      y: {
+				grid: {
+					dispaly: false,
+					drawBorder: false,
+					drawOnChartArea: false,
+					drawTicks: false
+				},
+        display: true, // Hide Y axis labels
+      },
       x: {
-        display: false // Hide X axis labels
-      }
-		}
-	};
+				grid: {
+					dispaly: false,
+					drawBorder: false,
+					drawOnChartArea: false,
+					drawTicks: false
+				},
+				title: {
+          display: true,
+          text: 'Time'
+        },
+        display: false, // Hide X axis labels
+      },
+    },
+  };
 
-  return (<Line data={data} options={options}/> );
+  return <Line data={data()} options={options} />;
 }
