@@ -6,22 +6,22 @@ import axios from 'axios';
 import _ from 'lodash';
 import { motion } from 'framer-motion';
 import {
-  Autocomplete,
   Box,
   Card,
+  CardHeader,
   CardContent,
+  Grid,
   Link,
   Stack,
-  TextField,
   Typography
 } from '@mui/material';
 import LineChart from '../components/LineChart';
+import Virtualize from '../components/Searchbar';
 
 
 export default function Home() {
-  const [query, setQuery] = useState("");
-  const [queryRes, setQueryRes] = useState([]);
   const [landingStock, setLandingStock] = useState({});
+  const [options, setOptions] = useState([]);
 
   useEffect(() => {
     const landing = () => {
@@ -33,24 +33,17 @@ export default function Home() {
           alert(error);
         });
     }
-    landing();
-  }, []);
-
-  useEffect(() => {
     const searchDB = () => {
-      axios.get(`https://api.twelvedata.com/stocks?symbol=${query}&source=docs`)
-        .then(res => {
-          setQueryRes(res.data);
+      axios
+        .get(`https://api.twelvedata.com/stocks?source=docs`)
+        .then((res) => {
+          setOptions(res.data);
         })
-        .catch(error => alert(error));
+        .catch((error) => alert(error));
     };
+    landing();
     searchDB();
-  }, [query])
-
-
-  const updateQuery = e => setQuery(e?.target?.value);
-  const debounceOnChange = _.debounce(updateQuery, 500);
-  console.log(queryRes)
+  }, []);
 
   return (
     <Box className={styles.container}>
@@ -61,60 +54,54 @@ export default function Home() {
       </Head>
 
       <main>
-        <Box className={styles.main}>
-          {
-            !_.isEmpty(queryRes) &&
-            // <Autocomplete
-            //   id="search"
-            //   getOptionLabel={() => `${queryRes.data.name}\n${queryRes.data.symbol} — $${queryRes.data.exchange}`}
-            //   options={queryRes.data}
-            //   sx={{ width: '33vw', padding: '1rem', }}
-            //   noOptionsText={"There are no stock symbols that match your search"}
-            //   renderOption={(props) => (
-            //     <Box component='li' {...props} key={queryRes.exchange}>
-            //       {queryRes.data.name} {queryRes.data.exchange}
-            //     </Box>)}
-            //   renderInput={(params) => <TextField {...params} placeholder='Search a symbol...' onChange={debounceOnChange} sx={{ fontWeight: 600 }}/>}
-            // />
-            <TextField
-              id="search"
-              placeholder='Search a symbol...'
-              variant='outlined'
-              onChange={debounceOnChange}
-              sx={{ width: '33vw', padding: '1rem', fontWeight: 600 }}
-            />
-          }
-          <motion.div
-            animate={{
-              y: [50, 0],
-              opacity: [0, 1],
-              animationDelay: 0.05
-            }}
-          >
-            <Box className={styles.grid} sx={{ padding: '1rem' }}>
-              <Card className={styles.card} elevation={0} sx={{ width: '33vw', height: '40vh', backgroundColor: '#fafafa' }}>
-                <Link href='/AAPL' underline='none' color={'#1a1a1a'}>
-                  <Stack direction='column'>
-                    <Typography variant='body1' fontWeight={'700'} sx={{ width: '100%' }}>
-                      Apple Inc
-                    </Typography>
-                    <Typography sx={{fontSize: '0.813rem'}}>
+        <Grid container className={styles.main} direction='row'>
+          {/* <Grid item>
+
+          </Grid> */}
+          <Grid item>
+            <Box>
+              <motion.div
+                animate={{
+                  y: [50, 0],
+                  opacity: [0, 1],
+                  animationDelay: 0.05
+                }}
+              >
+                <Box className={styles.grid} sx={{ padding: '1rem' }}>
+                  <Virtualize options={options} />
+                  <Card className={styles.card} elevation={0} >
+                    <CardContent>
+                      
+                    </CardContent>
+                  </Card>
+                  <Card className={styles.card} elevation={0} sx={{ width: '50vw', height: '60vh' }}>
+                      <Stack direction='row' spacing={10}>
+                        <Link href='/AAPL' underline='none' color={'#1a1a1a'}>
+                          <Stack direction='column'>
+                            <Typography variant='body1' fontWeight={'700'} sx={{ width: '100%' }}>
+                              Apple Inc
+                            </Typography>
+                            <Typography sx={{ fontSize: '0.813rem' }}>
+                              {
+                                !_.isEmpty(landingStock) && `${landingStock.meta.symbol} — ${landingStock.meta.exchange}`
+                              }
+                            </Typography>
+                          </Stack>
+                        </Link>
+                        
+                      </Stack>
+                    <CardContent>
                       {
-                        !_.isEmpty(landingStock) && `${landingStock.meta.symbol} — ${landingStock.meta.exchange}`
+                        !_.isEmpty(landingStock) &&
+                        <LineChart stock={landingStock} />
                       }
-                    </Typography>
-                  </Stack>
-                </Link>
-                <CardContent>
-                  {
-                    !_.isEmpty(landingStock) &&
-                    <LineChart stock={landingStock} />
-                  }
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
+                </Box>
+              </motion.div>
             </Box>
-          </motion.div>
-        </Box>
+          </Grid>
+        </Grid>
       </main>
 
       <footer className={styles.footer}>
@@ -124,7 +111,7 @@ export default function Home() {
           rel="noopener noreferrer"
           underline='none'
         >
-          <Typography fontWeight={700} sx={{color: '#1a1a1a'}}>
+          <Typography fontWeight={700} sx={{ color: '#1a1a1a' }}>
             Powered by
           </Typography>
           <span className={styles.logo}>
